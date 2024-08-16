@@ -152,12 +152,12 @@ if __name__ == '__main__':
 # Inicie o servidor Flask:
 
 bash
-Copiar código
+#Copiar código
 python app.py
 
  # Abra o HTML em um navegador e preencha o formulário.
 
-Verifique se os dados são enviados corretamente e armazenados no banco de dados.
+#Verificar se os dados são enviados corretamente e armazenados no banco de dados.
 
 Considerações Finais
 # Segurança: Adicione validação de dados e proteção contra ataques, como CSRF, no seu backend.
