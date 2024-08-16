@@ -1,0 +1,163 @@
+# 1. Frontend: Interface com o Usuário
+
+#Criando  uma interface básica com HTML e CSS, e usar JavaScript para enviar dados para o servidor.
+
+HTML (em index.html):
+
+html
+Copiar código
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Estudantes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Cadastro de Estudantes</h1>
+    <form id="signup-form">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="profession">Profissão de Interesse:</label>
+        <input type="text" id="profession" name="profession" required>
+        
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>
+CSS (em styles.css):
+
+css
+Copiar código
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+form {
+    max-width: 400px;
+    margin: auto;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+JavaScript (em script.js):
+
+javascript
+Copiar código
+document.getElementById('signup-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const profession = document.getElementById('profession').value;
+
+    try {
+        const response = await fetch('http://localhost:5000/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, profession }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro na solicitação');
+        }
+
+        const result = await response.json();
+        alert(result.message);
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Ocorreu um erro. Tente novamente.');
+    }
+});
+
+# 2. Backend: Python com Flask
+#Instalação:
+
+# Certifique-se de ter o Flask e o SQLAlchemy instalados.
+
+bash
+Copiar código
+pip install Flask SQLAlchemy
+Criação do servidor Flask (em app.py):
+
+python
+Copiar código
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///students.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    profession = db.Column(db.String(100), nullable=False)
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    new_student = Student(
+        name=data['name'],
+        email=data['email'],
+        profession=data['profession']
+    )
+    try:
+        db.session.add(new_student)
+        db.session.commit()
+        return jsonify({"message": "Cadastro realizado com sucesso!"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Erro: {str(e)}"}), 500
+
+if __name__ == '__main__':
+    db.create_all()
+    app.run(debug=True)
+
+# 2.1. Configuração do Ambiente
+# Inicie o servidor Flask:
+
+bash
+Copiar código
+python app.py
+
+ # Abra o HTML em um navegador e preencha o formulário.
+
+Verifique se os dados são enviados corretamente e armazenados no banco de dados.
+
+Considerações Finais
+# Segurança: Adicione validação de dados e proteção contra ataques, como CSRF, no seu backend.
+# Interface: Para uma interface mais avançada, considere usar bibliotecas JavaScript como React ou Vue.js.
+# Implantação: Para colocar o site online, considere serviços de hospedagem como Heroku, AWS, ou outros provedores de hospedagem.
